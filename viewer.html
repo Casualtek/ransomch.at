@@ -104,6 +104,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            scroll-behavior: smooth;
         }
 
         .message {
@@ -576,6 +577,7 @@
                     <p>Loading messages...</p>
                 </div>
             `;
+            chatContent.scrollTop = 0;
             
             // Find selected chat
             const [group, filename] = chatId.split('-');
@@ -666,7 +668,7 @@
         });
         
         // Scroll to bottom
-        chatContent.scrollTop = chatContent.scrollHeight;
+        chatContent.scrollTop = 0;
     }
 
     // Show empty state
