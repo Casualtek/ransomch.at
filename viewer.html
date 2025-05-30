@@ -433,7 +433,7 @@
                         <div class="dot"></div>
                         <div class="dot"></div>
                     </div>
-                    <p>Loading chat list...</p>
+                    <p>Loading chats list...</p>
                 </div>
             `;
             chatContent.scrollTop = 0;
@@ -443,7 +443,7 @@
                 try {
                     if (group && chatIndex?.groups[group]) {
                         // Populate chat dropdown
-                        const chats = chatIndex.groups[group] || [];
+                        const chats = chatIndex.groups[group].chats || [];
                         chatDropdown.innerHTML = '<option value="">Select a chat...</option>';
                         
                         chats.forEach(chat => {
