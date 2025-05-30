@@ -388,7 +388,7 @@
             .forEach(group => {
                 const option = document.createElement('option');
                 option.value = group;
-                option.textContent = `${formatGroupName(group)} (${chatIndex.groups[group].length})`;
+                option.textContent = `${formatGroupName(group)} (${chatIndex.groups[group].chats.length})`;
                 groupDropdown.appendChild(option);
             });
     }
