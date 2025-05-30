@@ -395,7 +395,7 @@
     async function fetchChatsForGroup(group) {
         try {
             // Fetch the contents of the group directory from GitHub
-            const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/chats/${encodeURIComponent(group)}?ref=${GITHUB_BRANCH}`);
+            const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(group)}?ref=${GITHUB_BRANCH}`);
             if (!response.ok) {
                 throw new Error(`Failed to fetch chats for group ${group}`);
             }
