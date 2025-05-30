@@ -490,7 +490,7 @@
             
             // Find selected chat
             const group = currentGroup;
-            const chat = (chatIndex.groups[group] || []).find(c => c.path === chatPath);
+            const chat = (chatIndex.groups[group].chats || []).find(c => c.raw_url === chatPath);
             
             if (chat) {
                 await selectChat(chat);
