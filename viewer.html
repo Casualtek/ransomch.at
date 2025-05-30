@@ -363,7 +363,7 @@
         
         try {
             // Fetch groups from GitHub API
-            const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/chats?ref=${GITHUB_BRANCH}`);
+            const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/?ref=${GITHUB_BRANCH}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch groups');
             }
