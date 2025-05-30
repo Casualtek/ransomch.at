@@ -448,7 +448,7 @@
                         
                         chats.forEach(chat => {
                             const option = document.createElement('option');
-                            option.value = chat.path; // Using path as unique identifier
+                            option.value = chat.filename; // Using filename as unique identifier
                             option.textContent = `${chat.chat_id} (${chat.message_count} messages)`;
                             chatDropdown.appendChild(option);
                         });
@@ -490,7 +490,7 @@
             
             // Find selected chat
             const group = currentGroup;
-            const chat = (chatIndex.groups[group].chats || []).find(c => c.path === chatPath);
+            const chat = (chatIndex.groups[group].chats || []).find(c => c.filename === chatPath);
             
             if (chat) {
                 await selectChat(chat);
