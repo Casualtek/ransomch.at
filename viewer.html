@@ -63,6 +63,18 @@
             align-items: center;
         }
 
+        @media (max-width: 768px) {
+            .header-actions {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+            
+            .dropdown-container {
+                margin-bottom: 0;
+            }
+        }
+
         /* Main Content */
         .main-content {
             flex: 1;
@@ -90,11 +102,6 @@
         .chat-meta {
             color: #b8c5d1;
             font-size: 14px;
-        }
-
-        .chat-actions {
-            display: flex;
-            gap: 10px;
         }
 
         .chat-content {
@@ -641,10 +648,6 @@
                         <span>Group: Loading...</span> • 
                         <span>Messages: Loading...</span>
                     </div>
-                </div>
-                <div class="chat-actions">
-                    <button class="btn btn-secondary">📤 Export</button>
-                    <button class="btn btn-secondary">🔗 Share</button>
                 </div>
             </div>
             
