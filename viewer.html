@@ -57,20 +57,33 @@
             filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
         }
 
-        .header-actions {
+        /* Dropdown Bar */
+        .dropdown-bar {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
-            gap: 15px;
             align-items: center;
+            padding: 0 20px;
+            gap: 15px;
+            z-index: 90;
         }
 
         @media (max-width: 768px) {
-            .header-actions {
+            .dropdown-bar {
                 flex-direction: column;
+                height: 110px;
+                padding: 10px 20px;
                 gap: 10px;
-                align-items: stretch;
             }
             
             .dropdown-container {
+                width: 100%;
                 margin-bottom: 0;
             }
         }
@@ -80,8 +93,15 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            margin-top: 70px;
-            height: calc(100vh - 70px);
+            margin-top: 130px;
+            height: calc(100vh - 130px);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-top: 180px;
+                height: calc(100vh - 180px);
+            }
         }
 
         .chat-header-main {
@@ -102,6 +122,11 @@
         .chat-meta {
             color: #b8c5d1;
             font-size: 14px;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 10px;
         }
 
         .chat-content {
@@ -331,9 +356,9 @@
 
     // Initialize the application
     async function init() {
-        // Create dropdown containers in header
-        const headerActions = document.querySelector('.header-actions');
-        headerActions.innerHTML = `
+        // Create dropdown containers in dropdown bar
+        const dropdownBar = document.querySelector('.dropdown-bar');
+        dropdownBar.innerHTML = `
             <div class="dropdown-container">
                 <select id="groupDropdown" class="dropdown-select">
                     <option value="">Loading groups...</option>
@@ -453,9 +478,10 @@
                         const chats = chatIndex.groups[group].chats || [];
                         chatDropdown.innerHTML = '<option value="">Select a chat...</option>';
                         
-                        chats.forEach(chat => {
+                        chats.forEach((chat, index) => {
                             const option = document.createElement('option');
-                            option.value = chat.filename; // Using filename as unique identifier
+                            // Use the filename as the unique identifier
+                            option.value = chat.filename;
                             option.textContent = `${chat.chat_id} (${chat.message_count} messages)`;
                             chatDropdown.appendChild(option);
                         });
@@ -475,8 +501,8 @@
         
         // Chat selection changed
         chatDropdown.addEventListener('change', async (e) => {
-            const chatPath = e.target.value;
-            if (!chatPath) {
+            const chatFilename = e.target.value;
+            if (!chatFilename) {
                 showEmptyState();
                 return;
             }
@@ -495,9 +521,9 @@
             `;
             chatContent.scrollTop = 0;
             
-            // Find selected chat
+            // Find selected chat by filename
             const group = currentGroup;
-            const chat = (chatIndex.groups[group].chats || []).find(c => c.filename === chatPath);
+            const chat = (chatIndex.groups[group].chats || []).find(c => c.filename === chatFilename);
             
             if (chat) {
                 await selectChat(chat);
@@ -518,6 +544,7 @@
             document.getElementById('chatTitle').textContent = chat.chat_id;
             
             document.getElementById('chatMeta').innerHTML = `
+                <span>Group: ${formatGroupName(currentGroup)}</span> • 
                 <span>Messages: ${chatData.messages?.length || 0}</span>
             `;
             
@@ -634,9 +661,11 @@
                 <img src="https://ransomch.at/logo.png" alt="Ransomchats Logo">
                 <span>Ransomch.at Viewer</span>
             </div>
-            <div class="header-actions">
-                <!-- Dropdowns will be inserted here by JavaScript -->
-            </div>
+        </div>
+
+        <!-- Dropdown Bar -->
+        <div class="dropdown-bar">
+            <!-- Dropdowns will be inserted here by JavaScript -->
         </div>
 
         <!-- Main Content -->
@@ -648,6 +677,9 @@
                         <span>Group: Loading...</span> • 
                         <span>Messages: Loading...</span>
                     </div>
+                </div>
+                <div class="chat-actions">
+                    <!-- Removed export and share buttons -->
                 </div>
             </div>
             
