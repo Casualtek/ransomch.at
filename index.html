@@ -421,6 +421,18 @@
                 opacity: 0;
             }
         }
+
+        .error-message {
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .error-message.show {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -459,18 +471,18 @@
                 <div class="features-grid">
                     <div class="feature-card">
                         <div class="feature-icon">🔍</div>
-                        <h3>Lorem Analysis</h3>
-                        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+                        <h3>Deep Analysis</h3>
+                        <p>Comprehensive examination of ransomware negotiation patterns, tactics, and communication strategies used by different threat actors.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">📊</div>
-                        <h3>Ipsum Statistics</h3>
-                        <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque.</p>
+                        <h3>Statistical Insights</h3>
+                        <p>Data-driven analysis of ransom demands, payment negotiations, and success rates across multiple ransomware families.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">🛡️</div>
-                        <h3>Dolor Security</h3>
-                        <p>Et harum quidem rerum facilis est et expedita distinctio nam libero tempore cum soluta nobis est eligendi.</p>
+                        <h3>Security Research</h3>
+                        <p>Educational resource for cybersecurity professionals to better understand and defend against ransomware threats.</p>
                     </div>
                 </div>
             </div>
@@ -482,14 +494,17 @@
                     <div class="stat-item">
                         <span class="stat-number" id="stat-chats">...</span>
                         <span class="stat-label">Negotiations</span>
+                        <div class="error-message" id="error-chats"></div>
                     </div>
                     <div class="stat-item">
                         <span class="stat-number" id="stat-groups">...</span>
                         <span class="stat-label">Ransomware brands</span>
+                        <div class="error-message" id="error-groups"></div>
                     </div>
                     <div class="stat-item">
                         <span class="stat-number" id="stat-messages">...</span>
                         <span class="stat-label">Messages</span>
+                        <div class="error-message" id="error-messages"></div>
                     </div>
                 </div>
             </div>
@@ -553,6 +568,7 @@
         }
 
         // Function to load statistics from the JSON file
+// Function to load statistics from the JSON file
         async function loadStatistics() {
             const statElements = {
                 chats: document.getElementById('stat-chats'),
@@ -560,49 +576,118 @@
                 messages: document.getElementById('stat-messages')
             };
 
+            const errorElements = {
+                chats: document.getElementById('error-chats'),
+                groups: document.getElementById('error-groups'),
+                messages: document.getElementById('error-messages')
+            };
+
             // Add loading animation
             Object.values(statElements).forEach(el => {
                 el.classList.add('loading');
             });
 
+            // Clear any previous error messages
+            Object.values(errorElements).forEach(el => {
+                el.classList.remove('show');
+                el.textContent = '';
+            });
+
+            console.log('Attempting to load statistics...');
+
             try {
-                const response = await fetch('https://raw.githubusercontent.com/Casualtek/Ransomchats/refs/heads/main/chat_index.json');
+                // Use the same URL and method as viewer.html with cache busting
+                const url = `https://raw.githubusercontent.com/Casualtek/Ransomchats/main/chat_index.json?t=${Date.now()}`;
+                
+                console.log(`Loading data from: ${url}`);
+                const response = await fetch(url);
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`Failed to load chat index: HTTP ${response.status}`);
                 }
                 
                 const data = await response.json();
-                
+                console.log('Successfully loaded JSON:', data);
+
                 // Remove loading animation
                 Object.values(statElements).forEach(el => {
                     el.classList.remove('loading');
                 });
 
-                // Animate the numbers
-                if (data.total_chats) {
-                    animateNumber(statElements.chats, data.total_chats);
+                // Extract statistics - check if data has statistics property or if it's the root
+                const stats = data.statistics || data;
+                
+                // Animate the numbers with the actual data
+                if (stats.total_chats !== undefined) {
+                    animateNumber(statElements.chats, stats.total_chats);
+                } else {
+                    // Try to calculate from groups if available
+                    if (data.groups) {
+                        const totalChats = Object.values(data.groups).reduce((sum, group) => {
+                            return sum + (group.chats ? group.chats.length : 0);
+                        }, 0);
+                        animateNumber(statElements.chats, totalChats);
+                    } else {
+                        statElements.chats.textContent = 'N/A';
+                        errorElements.chats.textContent = 'total_chats not found';
+                        errorElements.chats.classList.add('show');
+                    }
                 }
                 
-                if (data.total_groups) {
-                    animateNumber(statElements.groups, data.total_groups);
+                if (stats.total_groups !== undefined) {
+                    animateNumber(statElements.groups, stats.total_groups);
+                } else {
+                    // Try to calculate from groups if available
+                    if (data.groups) {
+                        const totalGroups = Object.keys(data.groups).length;
+                        animateNumber(statElements.groups, totalGroups);
+                    } else {
+                        statElements.groups.textContent = 'N/A';
+                        errorElements.groups.textContent = 'total_groups not found';
+                        errorElements.groups.classList.add('show');
+                    }
                 }
                 
-                if (data.total_messages) {
-                    animateNumber(statElements.messages, data.total_messages);
+                if (stats.total_messages !== undefined) {
+                    animateNumber(statElements.messages, stats.total_messages);
+                } else {
+                    // Try to calculate from groups if available
+                    if (data.groups) {
+                        const totalMessages = Object.values(data.groups).reduce((sum, group) => {
+                            return sum + (group.chats ? group.chats.reduce((chatSum, chat) => {
+                                return chatSum + (chat.message_count || 0);
+                            }, 0) : 0);
+                        }, 0);
+                        animateNumber(statElements.messages, totalMessages);
+                    } else {
+                        statElements.messages.textContent = 'N/A';
+                        errorElements.messages.textContent = 'total_messages not found';
+                        errorElements.messages.classList.add('show');
+                    }
                 }
 
             } catch (error) {
                 console.error('Error loading statistics:', error);
                 
-                // Remove loading animation and show error
+                // Remove loading animation and show fallback numbers
                 Object.values(statElements).forEach(el => {
                     el.classList.remove('loading');
-                    el.textContent = 'N/A';
                 });
+
+                // Show some demo numbers as fallback
+                animateNumber(statElements.chats, 218);
+                animateNumber(statElements.groups, 23);
+                animateNumber(statElements.messages, 10699);
+
+                // Show error messages
+                Object.values(errorElements).forEach(el => {
+                    el.textContent = 'Using demo data';
+                    el.classList.add('show');
+                });
+                
+                console.log('Using fallback demo data due to loading error');
             }
         }
-
         // Create floating particles effect
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
@@ -655,8 +740,20 @@
 
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing...');
             createParticles();
             loadStatistics();
+        });
+
+        // Also try loading stats when the page is fully loaded
+        window.addEventListener('load', function() {
+            console.log('Window loaded');
+            // Don't reload if already loaded successfully
+            const firstStat = document.getElementById('stat-chats');
+            if (firstStat && firstStat.textContent === '...') {
+                console.log('Stats not loaded yet, retrying...');
+                setTimeout(loadStatistics, 1000);
+            }
         });
     </script>
 </body>
