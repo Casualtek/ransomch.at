@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Ransomch.at</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e6ed;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            padding: 20px 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px 25px;
+            transition: all 0.3s ease;
+        }
+
+        nav:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #00d4ff;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            height: 32px;
+            width: auto;
+            filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #e0e6ed;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.7);
+        }
+
+        .nav-links a.active {
+            color: #00d4ff;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00d4ff, #ff6b6b);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 0 40px 0;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.4; }
+            50% { transform: translateX(-50%) scale(1.1); opacity: 0.6; }
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #00d4ff 0%, #ff6b6b 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #b8c5d1;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+            position: relative;
+            z-index: 2;
+        }
+
+        .content {
+            padding: 40px 0 80px 0;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(0, 212, 255, 0.05), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .content-section:hover::before {
+            left: 100%;
+        }
+
+        .content-section:hover {
+            border-color: rgba(0, 212, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .content-section h2 {
+            font-size: 1.8rem;
+            color: #00d4ff;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .content-section p {
+            color: #b8c5d1;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .content-section p:last-child {
+            margin-bottom: 0;
+        }
+
+        .acknowledgments {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .acknowledgments h2 {
+            color: #00d4ff;
+            margin-bottom: 25px;
+        }
+
+        .ack-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .ack-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+
+        .ack-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .ack-contributor {
+            font-weight: 600;
+            color: #00d4ff;
+            margin-bottom: 8px;
+        }
+
+        .ack-description {
+            color: #b8c5d1;
+            line-height: 1.6;
+        }
+
+        .contribute-section {
+            background: rgba(255, 107, 107, 0.08);
+            border: 1px solid rgba(255, 107, 107, 0.2);
+        }
+
+        .contribute-section h2 {
+            color: #ff6b6b;
+        }
+
+        .contribute-section .highlight {
+            background: rgba(255, 107, 107, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .contribute-section .highlight p {
+            margin: 0;
+            font-weight: 500;
+            color: #ff9999;
+        }
+
+        .coffee-support {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .coffee-support img {
+            max-width: 200px;
+            height: auto;
+            transition: transform 0.3s ease, filter 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .coffee-support img:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+        }
+
+        .external-link {
+            color: #00d4ff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .external-link:hover {
+            color: #33e0ff;
+            text-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+        }
+
+        .external-link::after {
+            content: '↗';
+            font-size: 0.8em;
+            margin-left: 4px;
+            opacity: 0.7;
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: #b8c5d1;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #00d4ff;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .content-section {
+                padding: 30px 20px;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+            }
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(0, 212, 255, 0.4);
+            border-radius: 50%;
+            animation: float 25s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-particles" id="particles"></div>
+    
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <img src="https://ransomch.at/logo.png" alt="Ransomchat Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                    <span style="display: none;">Ransomch.at</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="./viewer.html">Chats</a></li>
+                    <li><a href="./about.html" class="active">About</a></li>
+                    <li><a href="https://linktr.ee/valerymarchive" class="external-link">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>About this Project</h1>
+                <p>Understanding ransomware negotiations through real-world data and collaborative research.</p>
+            </div>
+        </section>
+
+        <section class="content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>What is Ransomch(.)at?</h2>
+                    <p>Here you'll find real world ransomware negotiations. Ransomware negotiations are usually not shared widely, limiting the understanding of the process. This project aims at changing that, in a respectful manner for the victims of cyberattacks: chats are redacted and anonymized as long as the victim hasn't been publicly disclosed, either by the attackers or in the media.</p>
+                </div>
+
+                <div class="content-section contribute-section">
+                    <h2>Contributing to the Project</h2>
+                    <p>You have copies of negotiations? You're more than welcome to contribute. You can find some parsers ready to use to help you with that. Or you can send me an email: <a href="mailto:valery@proton.me" class="external-link">valery@proton.me</a></p>
+                    <div class="highlight">
+                        <p>If you want to contribute ransom chats yourself, note that none will be published without your clear agreement to their parsing and redaction.</p>
+                    </div>
+                </div>
+
+                <div class="content-section acknowledgments">
+                    <h2>Acknowledgments & Research</h2>
+                    
+                    <div class="ack-item">
+                        <div class="ack-contributor">@thomfredev</div>
+                        <div class="ack-description">Thanks for the original <a href="https://github.com/thomfre/ransomchats-viewer" class="external-link">reading app</a> that used to be running here.</div>
+                    </div>
+
+                    <div class="ack-item">
+                        <div class="ack-contributor">@JMousqueton</div>
+                        <div class="ack-description">Thanks for including the chats in <a href="https://www.ransomware.live/#/negotiations" class="external-link">ransomware.live</a></div>
+                    </div>
+
+                    <div class="ack-item">
+                        <div class="ack-contributor">@g0njxa, Rakesh Krishnan & @JMousqueton</div>
+                        <div class="ack-description">Thanks for the ransom chats you contributed to the project.</div>
+                    </div>
+
+                    <div class="ack-item">
+                        <div class="ack-contributor">Calvin So</div>
+                        <div class="ack-description">Thanks for the stylometric analysis research <a href="https://medium.com/@callyso0414/tracing-ransomware-threat-actors-through-stylometric-analysis-and-chat-log-examination-23f0f84abba8" class="external-link">here</a> and <a href="https://medium.com/@callyso0414/tracing-ransomware-threat-actors-through-stylometric-analysis-and-chat-log-examination-part-2-2928cf497e5a" class="external-link">there</a>.</div>
+                    </div>
+
+                    <div class="ack-item">
+                        <div class="ack-contributor">PCMag Middle East</div>
+                        <div class="ack-description">Thanks for <a href="https://me.pcmag.com/en/ransomware-protection/18858/haggling-with-hackers-surprising-lessons-from-50-negotiations-with-ransomware-gangs" class="external-link">their analysis</a> of ransomware negotiations.</div>
+                    </div>
+
+                    <div class="ack-item">
+                        <div class="ack-contributor">SEC4U</div>
+                        <div class="ack-description">Thanks for <a href="https://www.neteye-blog.com/2023/09/ransomware-negotiation-dos-and-donts/" class="external-link">their research</a> on ransomware negotiation dos and don'ts.</div>
+                    </div>
+
+                    <div class="ack-item">
+                        <div class="ack-contributor">Anastasia Sentsova (Analyst1)</div>
+                        <div class="ack-description">Used LockBit's chats in her research <a href="https://analyst1.com/blog-negotiating-with-lockbit-uncovering-the-evolution-of-operations-and-newly-established-rules/" class="external-link">"Negotiating with LockBit: Uncovering the Evolution of Operations and Newly Established Rules"</a>.</div>
+                    </div>
+
+                    <div class="ack-item">
+                        <div class="ack-contributor">John Hammond (Huntress Labs)</div>
+                        <div class="ack-description">Made a <a href="https://www.youtube.com/watch?v=Yj28OEeDDzk" class="external-link">full video</a> on ransomware negotiations using the chats in this repository.</div>
+                    </div>
+
+                    <div class="ack-item">
+                        <div class="ack-contributor">Mikko Hypponen (WithSecure)</div>
+                        <div class="ack-description">Mentioned this project during his <a href="https://www.youtube.com/watch?v=Ap8gWBNQ24g" class="external-link">keynote</a> at RSA Conference 2024.</div>
+                    </div>
+
+                    <div class="ack-item">
+                        <div class="ack-contributor">Anastasia Sentsova & Jon DiMaggio</div>
+                        <div class="ack-description">Their <a href="https://analyst1.com/ransomware-extortion-activity-in-2024-a-year-in-review/" class="external-link">analysis</a> of some specifics of negotiations with Akira.</div>
+                    </div>
+
+                    <div class="ack-item">
+                        <div class="ack-contributor">Jean-Yves Marion (Lorraine University)</div>
+                        <div class="ack-description">Mentioned this project in his research paper <a href="https://cacm.acm.org/research/ransomware-extortion-is-my-business/" class="external-link">"Ransomware: Extortion Is My Business"</a>.</div>
+                    </div>
+
+                    <div class="ack-item">
+                        <div class="ack-contributor">Ellis Stannard</div>
+                        <div class="ack-description">Created a custom ChatGPT <a href="https://ellisstannard.medium.com/ransomchatgpt-ransomware-negotiation-simulator-ee8cab041b53" class="external-link">trained on this dataset</a> for ransomware negotiation simulation.</div>
+                    </div>
+
+                    <div class="ack-item">
+                        <div class="ack-contributor">Antonio Brandao</div>
+                        <div class="ack-description">Developed a <a href="https://github.com/toniall/ransomchat" class="external-link">Ransomware negotiations simulator</a>.</div>
+                    </div>
+                </div>
+
+                <div class="coffee-support">
+                    <a href="https://www.buymeacoffee.com/casualtek" target="_blank">
+                        <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee">
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>© 2024 Ransomch.at - Educational Research Project</div>
+                <ul class="footer-links">
+                    <li><a href="https://linktr.ee/valerymarchive">Contact</a></li>
+                    <li><a href="https://github.com/Casualtek/Ransomchats">GitHub</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Create floating particles effect
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 25 + 's';
+                particle.style.animationDuration = (20 + Math.random() * 15) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add parallax effect to hero section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            if (hero) {
+                hero.style.transform = `translateY(${scrolled * 0.3}px)`;
+            }
+        });
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+        });
+    </script>
+</body>
+</html>
