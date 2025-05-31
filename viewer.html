@@ -25,67 +25,165 @@
             height: 100vh;
         }
 
-        /* Header */
+        /* Header - Updated to match index.html style */
         .header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            height: 70px;
+            height: 90px;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            z-index: 100;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px 25px;
+            transition: all 0.3s ease;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-nav:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
         .logo {
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #00d4ff;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 32px;
+            width: auto;
+            filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+        }
+
+        .logo-text {
+            transition: all 0.3s ease;
+        }
+
+        .chat-header-info {
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .chat-header-info.active {
+            display: flex;
+        }
+
+        .chat-header-info .chat-title {
             font-size: 20px;
             font-weight: 700;
             color: #00d4ff;
         }
 
-        .logo img {
-            height: 28px;
-            width: auto;
-            filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+        .chat-header-info .chat-meta {
+            font-size: 12px;
+            color: #b8c5d1;
+            font-weight: 400;
         }
 
-        /* Dropdown Bar */
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #e0e6ed;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.7);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00d4ff, #ff6b6b);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Dropdown Bar - Updated to match header style with scroll behavior */
         .dropdown-bar {
             position: fixed;
-            top: 70px;
+            top: 110px;
             left: 0;
             right: 0;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            z-index: 90;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .dropdown-bar.hidden {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .dropdown-container-wrapper {
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            padding: 0 20px;
-            gap: 15px;
-            z-index: 90;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px 25px;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-container-wrapper:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
         @media (max-width: 768px) {
-            .dropdown-bar {
+            .dropdown-container-wrapper {
                 flex-direction: column;
-                height: 110px;
-                padding: 10px 20px;
-                gap: 10px;
+                gap: 15px;
+                padding: 20px;
             }
             
             .dropdown-container {
                 width: 100%;
-                margin-bottom: 0;
+            }
+
+            .nav-links {
+                display: none;
             }
         }
 
@@ -94,40 +192,20 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            margin-top: 130px;
-            height: calc(100vh - 130px);
+            margin-top: 90px;
+            height: calc(100vh - 90px);
+        }
+
+        .main-content.with-dropdown {
+            margin-top: 170px;
+            height: calc(100vh - 170px);
         }
 
         @media (max-width: 768px) {
-            .main-content {
-                margin-top: 180px;
-                height: calc(100vh - 180px);
+            .main-content.with-dropdown {
+                margin-top: 220px;
+                height: calc(100vh - 220px);
             }
-        }
-
-        .chat-header-main {
-            background: rgba(255, 255, 255, 0.03);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .chat-info h2 {
-            color: #00d4ff;
-            margin-bottom: 5px;
-            font-size: 1.2rem;
-        }
-
-        .chat-meta {
-            color: #b8c5d1;
-            font-size: 14px;
-        }
-
-        .chat-actions {
-            display: flex;
-            gap: 10px;
         }
 
         .chat-content {
@@ -257,40 +335,49 @@
 
         /* Dropdown styles */
         .dropdown-container {
-            margin-bottom: 15px;
             position: relative;
         }
         .dropdown-select {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
             color: #e0e6ed;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            font-weight: 500;
             cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23b8c5d1'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300d4ff'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
             background-repeat: no-repeat;
-            background-position: right 10px center;
+            background-position: right 12px center;
             background-size: 20px;
+            min-width: 200px;
+            transition: all 0.3s ease;
         }
         .dropdown-select:disabled {
-            opacity: 0.7;
+            opacity: 0.5;
             cursor: not-allowed;
         }
         .dropdown-select:focus {
             outline: none;
             border-color: #00d4ff;
-            box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .dropdown-select:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(0, 212, 255, 0.5);
         }
         .dropdown-select option {
             background: #1a1a2e;
+            color: #e0e6ed;
+            padding: 10px;
         }
         
         /* Loading indicators */
         .loading-indicator {
             position: absolute;
-            right: 35px;
+            right: 40px;
             top: 50%;
             transform: translateY(-50%);
             width: 16px;
@@ -354,23 +441,27 @@
     let chatIndex = null;
     let currentGroup = null;
     let currentChat = null;
+    let lastScrollTop = 0;
+    let scrollThreshold = 50;
 
     // Initialize the application
     async function init() {
         // Create dropdown containers in dropdown bar
         const dropdownBar = document.querySelector('.dropdown-bar');
         dropdownBar.innerHTML = `
-            <div class="dropdown-container">
-                <select id="groupDropdown" class="dropdown-select">
-                    <option value="">Loading groups...</option>
-                </select>
-                <div class="loading-indicator group-loading"></div>
-            </div>
-            <div class="dropdown-container">
-                <select id="chatDropdown" class="dropdown-select" disabled>
-                    <option value="">Select a group first</option>
-                </select>
-                <div class="loading-indicator chat-loading" style="display: none;"></div>
+            <div class="dropdown-container-wrapper">
+                <div class="dropdown-container">
+                    <select id="groupDropdown" class="dropdown-select">
+                        <option value="">Loading groups...</option>
+                    </select>
+                    <div class="loading-indicator group-loading"></div>
+                </div>
+                <div class="dropdown-container">
+                    <select id="chatDropdown" class="dropdown-select" disabled>
+                        <option value="">Select a group first</option>
+                    </select>
+                    <div class="loading-indicator chat-loading" style="display: none;"></div>
+                </div>
             </div>
         `;
 
@@ -380,8 +471,47 @@
         // Setup dropdown event listeners
         setupDropdownListeners();
         
+        // Setup scroll listener
+        setupScrollListener();
+        
         // Show initial empty state
         showEmptyState();
+    }
+
+    // Setup scroll listener for dropdown bar visibility
+    function setupScrollListener() {
+        const chatContent = document.getElementById('chatContent');
+        const dropdownBar = document.querySelector('.dropdown-bar');
+        const mainContent = document.querySelector('.main-content');
+        
+        chatContent.addEventListener('scroll', () => {
+            const scrollTop = chatContent.scrollTop;
+            const scrollHeight = chatContent.scrollHeight;
+            const clientHeight = chatContent.clientHeight;
+            
+            // Check if we're at the top or bottom
+            const isAtTop = scrollTop <= scrollThreshold;
+            const isAtBottom = scrollTop >= scrollHeight - clientHeight - scrollThreshold;
+            
+            // Check if we're scrolling up or down
+            const isScrollingUp = scrollTop < lastScrollTop;
+            
+            // Show dropdown bar if:
+            // - At the top
+            // - At the bottom
+            // - Scrolling up and not too far down
+            const shouldShow = isAtTop || isAtBottom || (isScrollingUp && scrollTop < 200);
+            
+            if (shouldShow) {
+                dropdownBar.classList.remove('hidden');
+                mainContent.classList.add('with-dropdown');
+            } else {
+                dropdownBar.classList.add('hidden');
+                mainContent.classList.remove('with-dropdown');
+            }
+            
+            lastScrollTop = scrollTop;
+        });
     }
 
     // Load the chat index file
@@ -438,6 +568,24 @@
         return group.charAt(0).toUpperCase() + group.slice(1);
     }
 
+    // Update header with chat information
+    function updateHeaderChatInfo(chatTitle, chatMeta) {
+        const logoText = document.querySelector('.logo-text');
+        const chatHeaderInfo = document.querySelector('.chat-header-info');
+        
+        if (chatTitle && chatMeta) {
+            // Hide logo text and show chat info
+            logoText.style.display = 'none';
+            chatHeaderInfo.classList.add('active');
+            chatHeaderInfo.querySelector('.chat-title').textContent = chatTitle;
+            chatHeaderInfo.querySelector('.chat-meta').innerHTML = chatMeta;
+        } else {
+            // Show logo text and hide chat info
+            logoText.style.display = 'block';
+            chatHeaderInfo.classList.remove('active');
+        }
+    }
+
     // Setup dropdown event listeners
     function setupDropdownListeners() {
         const groupDropdown = document.getElementById('groupDropdown');
@@ -449,8 +597,8 @@
             currentGroup = group;
             currentChat = null;
             
-            // Clear chat header
-            document.getElementById('chatHeader').style.display = 'none';
+            // Clear header chat info
+            updateHeaderChatInfo(null, null);
             
             // Enable/disable chat dropdown
             chatDropdown.disabled = true;
@@ -505,6 +653,7 @@
             const chatFilename = e.target.value;
             if (!chatFilename) {
                 showEmptyState();
+                updateHeaderChatInfo(null, null);
                 return;
             }
             
@@ -540,14 +689,13 @@
             // Fetch chat data from raw URL
             const chatData = await fetchChatData(chat.raw_url);
             
-            // Show chat header
-            document.getElementById('chatHeader').style.display = 'flex';
-            document.getElementById('chatTitle').textContent = chat.chat_id;
-            
-            document.getElementById('chatMeta').innerHTML = `
+            // Update header with chat information
+            const chatTitle = chat.chat_id;
+            const chatMeta = `
                 <span>Group: ${formatGroupName(currentGroup)}</span> • 
                 <span>Messages: ${chatData.messages?.length || 0}</span>
             `;
+            updateHeaderChatInfo(chatTitle, chatMeta);
             
             // Render messages
             renderMessages(chatData.messages || []);
@@ -561,6 +709,7 @@
                     <p>${error.message}</p>
                 </div>
             `;
+            updateHeaderChatInfo(null, null);
         }
     }
 
@@ -628,7 +777,6 @@
 
     // Show empty state
     function showEmptyState() {
-        document.getElementById('chatHeader').style.display = 'none';
         document.getElementById('chatContent').innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">💬</div>
@@ -640,7 +788,6 @@
 
     // Show error state
     function showErrorState(message) {
-        document.getElementById('chatHeader').style.display = 'none';
         document.getElementById('chatContent').innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">⚠️</div>
@@ -658,12 +805,21 @@
     <div class="app-container">
         <!-- Header -->
         <div class="header">
-            <div class="logo">
-                <a href="./" style="all: unset; cursor: pointer;">
-                <img src="https://ransomch.at/logo.png" alt="Ransomchats Logo">
-                <span>Ransomch.at Viewer</span>
+            <nav class="header-nav">
+                <a href="./" class="logo">
+                    <img src="https://ransomch.at/logo.png" alt="Ransomchats Logo">
+                    <span class="logo-text">Ransomch.at</span>
+                    <div class="chat-header-info">
+                        <div class="chat-title">Chat Title</div>
+                        <div class="chat-meta">Chat Meta</div>
+                    </div>
                 </a>
-            </div>
+                <ul class="nav-links">
+                    <li><a href="./">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
         </div>
 
         <!-- Dropdown Bar -->
@@ -672,20 +828,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="main-content">
-            <div class="chat-header-main" id="chatHeader" style="display: none;">
-                <div class="chat-info">
-                    <h2 id="chatTitle">Chat Title</h2>
-                    <div class="chat-meta" id="chatMeta">
-                        <span>Group: Loading...</span> • 
-                        <span>Messages: Loading...</span>
-                    </div>
-                </div>
-                <div class="chat-actions">
-                    <!-- Removed export and share buttons -->
-                </div>
-            </div>
-            
+        <div class="main-content with-dropdown">
             <div class="chat-content" id="chatContent">
                 <div class="empty-state">
                     <div class="empty-state-icon">💬</div>
