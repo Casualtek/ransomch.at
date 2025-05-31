@@ -57,6 +57,13 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 25px rgba(0, 212, 255, 0.7);
         }
 
         .logo img {
@@ -420,10 +427,10 @@
     <header>
         <div class="container">
             <nav>
-                <div class="logo">
+                <a href="./index.html" class="logo">
                     <img src="https://ransomch.at/logo.png" alt="Ransomchat Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
                     <span style="display: none;">Ransomch.at</span>
-                </div>
+                </a>
                 <ul class="nav-links">
                     <li><a href="./viewer.html">Chats</a></li>
                     <li><a href="./about.html" class="active">About</a></li>
@@ -537,7 +544,7 @@
     <footer>
         <div class="container">
             <div class="footer-content">
-                <div>© 2024 Ransomch.at - Educational Research Project</div>
+                <div id="last-updated">Last updated: Loading...</div>
                 <ul class="footer-links">
                     <li><a href="https://linktr.ee/valerymarchive">Contact</a></li>
                     <li><a href="https://github.com/Casualtek/Ransomchats">GitHub</a></li>
@@ -547,6 +554,37 @@
     </footer>
 
     <script>
+        // Function to load and display the last updated date
+        async function loadLastUpdated() {
+            const lastUpdatedElement = document.getElementById('last-updated');
+            
+            try {
+                const url = `https://raw.githubusercontent.com/Casualtek/Ransomchats/main/chat_index.json?t=${Date.now()}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to load chat index: HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.last_updated) {
+                    const date = new Date(data.last_updated);
+                    const formattedDate = date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    lastUpdatedElement.textContent = `Last updated: ${formattedDate}`;
+                } else {
+                    lastUpdatedElement.textContent = 'Last updated: Unknown';
+                }
+            } catch (error) {
+                console.error('Error loading last updated date:', error);
+                lastUpdatedElement.textContent = 'Last updated: Unable to load';
+            }
+        }
+
         // Create floating particles effect
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
@@ -588,6 +626,7 @@
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
+            loadLastUpdated();
         });
     </script>
 </body>
