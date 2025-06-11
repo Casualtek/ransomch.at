@@ -216,6 +216,9 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
 
         .feature-card::before {
@@ -470,7 +473,7 @@
         <section class="features">
             <div class="container">
                 <div class="features-grid">
-                    <div class="feature-card">
+                    <div class="feature-card" onclick="window.location.href='./analysis.html'">
                         <div class="feature-icon">🔍</div>
                         <h3>Deep Analysis</h3>
                         <p>Comprehensive examination of ransomware negotiation patterns, tactics, and communication strategies used by different threat actors.</p>
