@@ -1,0 +1,373 @@
+/* Viewer-specific CSS for Ransomch.at */
+
+body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Header - Updated to match index.html style */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 90px;
+    padding: 20px;
+    z-index: 100;
+}
+
+.header-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px 25px;
+    transition: all 0.3s ease;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header-nav:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.logo-text {
+    transition: all 0.3s ease;
+}
+
+.chat-header-info {
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.chat-header-info.active {
+    display: flex;
+}
+
+.chat-header-info .chat-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #00d4ff;
+}
+
+.chat-header-info .chat-meta {
+    font-size: 12px;
+    color: #b8c5d1;
+    font-weight: 400;
+}
+
+/* Dropdown Bar - Updated to match header style with scroll behavior */
+.dropdown-bar {
+    position: fixed;
+    top: 110px;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    z-index: 90;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.dropdown-bar.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dropdown-container-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px 25px;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+}
+
+.dropdown-container-wrapper:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+    .dropdown-container-wrapper {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+    }
+    
+    .dropdown-container {
+        width: 100%;
+    }
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-top: 90px;
+    height: calc(100vh - 90px);
+}
+
+.main-content.with-dropdown {
+    margin-top: 170px;
+    height: calc(100vh - 170px);
+}
+
+@media (max-width: 768px) {
+    .main-content.with-dropdown {
+        margin-top: 220px;
+        height: calc(100vh - 220px);
+    }
+}
+
+.chat-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    scroll-behavior: smooth;
+}
+
+.message {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.message:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.message.attacker {
+    border-left-color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.05);
+}
+
+.message.victim {
+    border-left-color: #ffc107;
+    background: rgba(255, 193, 7, 0.05);
+}
+
+.message.system {
+    border-left-color: #6c757d;
+    background: rgba(108, 117, 125, 0.05);
+}
+
+.message-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.message.attacker .message-avatar {
+    background: #ff6b6b;
+    color: white;
+}
+
+.message.victim .message-avatar {
+    background: #ffc107;
+    color: #333;
+}
+
+.message.system .message-avatar {
+    background: #6c757d;
+    color: white;
+}
+
+.message-content {
+    flex: 1;
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.message-sender {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.message.attacker .message-sender {
+    color: #ff6b6b;
+}
+
+.message.victim .message-sender {
+    color: #ffc107;
+}
+
+.message.system .message-sender {
+    color: #6c757d;
+}
+
+.message-time {
+    font-size: 11px;
+    color: #888;
+}
+
+.message-text {
+    color: #e0e6ed;
+    line-height: 1.5;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 13px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #b8c5d1;
+    text-align: center;
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+/* Dropdown styles */
+.dropdown-container {
+    position: relative;
+}
+
+.dropdown-select {
+    padding: 12px 18px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    color: #e0e6ed;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300d4ff'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 20px;
+    min-width: 200px;
+    transition: all 0.3s ease;
+}
+
+.dropdown-select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.dropdown-select:focus {
+    outline: none;
+    border-color: #00d4ff;
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.dropdown-select:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(0, 212, 255, 0.5);
+}
+
+.dropdown-select option {
+    background: #1a1a2e;
+    color: #e0e6ed;
+    padding: 10px;
+}
+
+/* Loading indicators */
+.loading-indicator {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0, 212, 255, 0.3);
+    border-top: 2px solid #00d4ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: none;
+}
+
+@keyframes spin {
+    0% { transform: translateY(-50%) rotate(0deg); }
+    100% { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* Message loading indicator */
+.message-loading {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.message-loading .dot {
+    width: 10px;
+    height: 10px;
+    margin: 0 5px;
+    background-color: #00d4ff;
+    border-radius: 50%;
+    display: inline-block;
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.message-loading .dot:nth-child(1) { animation-delay: -0.32s; }
+.message-loading .dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); } 
+    40% { transform: scale(1); }
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 212, 255, 0.3);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 212, 255, 0.5);
+}

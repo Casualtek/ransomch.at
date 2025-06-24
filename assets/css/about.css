@@ -1,0 +1,82 @@
+/* About page specific CSS for Ransomch.at */
+
+.acknowledgments {
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.acknowledgments h2 {
+    color: #00d4ff;
+    margin-bottom: 25px;
+}
+
+.ack-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+}
+
+.ack-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(5px);
+}
+
+.ack-item:last-child {
+    margin-bottom: 0;
+}
+
+.ack-contributor {
+    font-weight: 600;
+    color: #00d4ff;
+    margin-bottom: 8px;
+}
+
+.ack-description {
+    color: #b8c5d1;
+    line-height: 1.6;
+}
+
+.contribute-section {
+    background: rgba(255, 107, 107, 0.08);
+    border: 1px solid rgba(255, 107, 107, 0.2);
+}
+
+.contribute-section h2 {
+    color: #ff6b6b;
+}
+
+.contribute-section .highlight {
+    background: rgba(255, 107, 107, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+    border-left: 4px solid #ff6b6b;
+}
+
+.contribute-section .highlight p {
+    margin: 0;
+    font-weight: 500;
+    color: #ff9999;
+}
+
+.coffee-support {
+    text-align: center;
+    padding: 40px 0;
+}
+
+.coffee-support img {
+    max-width: 200px;
+    height: auto;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    border-radius: 10px;
+}
+
+.coffee-support img:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
