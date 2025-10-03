@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview: Managing Leaks in Ransomware Negotiations - Ransomch.at</title>
+    <link rel="stylesheet" href="./assets/css/main.css">
+</head>
+<body>
+    <div class="floating-particles" id="particles"></div>
+
+    <header>
+        <div class="container">
+            <nav>
+                <a href="./index.html" class="logo">
+                    <img src="https://ransomch.at/logo.png" alt="Ransomchat Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                    <span style="display: none;">Ransomch.at</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="./viewer.html">Chats</a></li>
+                    <li><a href="./analysis.html">Analysis</a></li>
+                    <li><a href="./about.html">About</a></li>
+                    <li><a href="https://linktr.ee/valerymarchive" class="external-link">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Managing Leaks in Ransomware Negotiations</h1>
+                <p>An interview with Valéry exploring the critical risks of leaked ransomware negotiations and strategies for maintaining confidentiality during cyber incidents.</p>
+            </div>
+        </section>
+
+        <section class="content">
+            <div class="container">
+                <div class="content-section">
+                    <p class="interview-info"><strong>Originally published:</strong> September 4, 2025 on <a href="https://www.maninthebrowser.com/interview-managing-leaks-in-ransomware-negotiations/" target="_blank" class="external-link">Man In The Browser</a><br>
+                    <strong>Interviewer:</strong> Sean.<br>
+                    <strong>Interviewee:</strong> <a href="https://www.linkedin.com/in/valerymarchive/" class="external-link">Val&eacute;ry Rie&szlig;-Marchive</a>, editor-in-chief at <a href="https://www.lemagit.fr" class="external-link">LeMagIT</a> and ransomware researcher.</p>
+                </div>
+
+                <div class="content-section">
+                    <h2>Understanding Ransomware Negotiations</h2>
+
+                    <div class="interview-qa">
+                        <h3>What do ransomware negotiations typically involve?</h3>
+                        <p class="answer">Ransomware negotiations generally involve information about the victim of the attack, starting with its name. That's very sensitive for a victim that hasn't publicly disclosed the attack.</p>
+<p class="answer">Even if there's no intention to pay, the fact that a conversation is taking place can be misinterpreted. Leaks during the process can undermine the goals of the negotiation.</p>
+<p class="answer">Additionally, exchanged files — whether they're raw lists of stolen data or encrypted files being tested for decryption — can contain PII or IP, making them highly sensitive.</p>
+                    </div>
+
+                    <div class="interview-qa">
+                        <h3>What are the key risks of leaked negotiations?</h3>
+                        <p class="answer">The first risk is obvious: an undisclosed cyberattack becomes public. If a ransom had been paid to suppress the news, that intent fails.</p>
+<p class="answer">Worse, sensitive information shared during negotiation might be exposed, wrecking any planned communication strategy.</p>
+                    </div>
+
+                    <div class="interview-qa">
+                        <h3>How can leaked negotiations impact an organization?</h3>
+                        <p class="answer">In case of a cyberattack, resilience depends on two pillars: IT and communication.</p>
+<p class="answer">As shown in a 2022 Bessé/G.P. Goldstein analysis, 'communication is essential to trust'. If communication appears inconsistent or unprofessional — especially in leaked chat logs — it damages trust.</p>
+<p class="answer">Leaked conversations may also make the victim a target for additional threat actors looking to exploit perceived weakness. It has happened before.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>Prevention Strategies</h2>
+
+                    <div class="highlight">
+                    <div class="interview-qa">
+                        <h3>What steps can organizations take to ensure negotiation confidentiality?</h3>
+                        <p class="answer">First, minimize exposure to the ransom note — especially with employees and customers. But when it's printed or unavoidable, find a way to establish a secure channel to the threat actor.</p>
+<p class="answer">Second, do not upload ransomware samples to public sandboxes or VirusTotal — at least not until incident response is complete.</p>
+<p class="answer">And finally, if a payment is made, ask the threat actor to delete the chat, and verify that it's actually gone. Some groups like Akira are known to do this regularly.</p>
+                    </div>
+                    </div>
+
+                    <div class="interview-qa">
+                        <h3>What tools can help prevent leaks?</h3>
+                        <p class="answer">Many ransomware groups operate via web‑based negotiation interfaces. If a chatroom seems compromised, they can open a new one. Details can be exchanged using ephemeral file sharing services or other discreet channels. Some threat actors also accept switching to email, Tox, or Session.</p>
+                    </div>
+
+                </div>
+
+                <div class="content-section">
+                    <h2>Organizational Best Practices</h2>
+
+                    <div class="interview-qa">
+                        <h3>Should organizations have predefined negotiation protocols?</h3>
+                        <p class="answer">Absolutely. Just as you'd prepare an incident response plan, you should plan communication protocols for ransomware events. Consider scenarios based on how the ransom note appears, and build processes to keep those conversations confidential.</p>
+<p class="answer">But remember: the threat actor is not trustworthy. Some, like LockBit 3.0 and DragonForce, routinely publish failed negotiations. And you have no guarantee those chat logs weren’t tampered with.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>Legal and Ethical Considerations</h2>
+
+                    <div class="interview-qa">
+                        <h3>How should organizations handle third-party involvement?</h3>
+                        <p class="answer">That’s a near no-brainer. Incident response firms are usually highly trustworthy. They’re contractually and operationally focused on confidentiality. They also typically restrict access to conversations — even internal technical teams don’t see them.</p>
+                    </div>
+
+                    <div class="interview-qa">
+                        <h3>What are common mistakes in negotiations?</h3>
+                        <p class="answer">One big mistake: refusing to engage at all. If no one logs in to the attacker’s chatroom, anyone with access to the ransomware sample or note might do it and extract info.</p>
+<p class="answer">Even if you won’t pay, it’s smart to at least engage, ask for a new chatroom, and get the old one deleted. This risk varies. Some ransomware builds the ransom note using runtime arguments, making it harder for third parties to re-enter negotiations from the sample.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>Key Recommendations</h2>
+
+                    <div class="highlight">
+                        <div class="interview-qa">
+                            <h3>What's your key recommendation for organizations facing ransomware negotiation?</h3>
+                            <p class="answer">Don't do it yourself. Ask law enforcement, your insurer, or a professional incident response firm who should negotiate on your behalf. Victims are rarely in the right headspace.</p>
+<p class="answer">Ideally, you’ve already defined a strategy and goals before you’re in the middle of a crisis.</p>
+                        </div>
+                    </div>
+
+                    <p>The complexities of ransomware negotiations extend far beyond simple payment discussions. Organizations must carefully balance transparency, security, and legal obligations while managing the significant risk of information leakage that could compound their crisis.</p>
+
+                    <p>Understanding these dynamics is crucial for developing effective incident response strategies that protect both immediate interests and long-term organizational resilience.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div id="last-updated">Last updated: Loading...</div>
+                <ul class="footer-links">
+                    <li><a href="https://linktr.ee/valerymarchive">Contact</a></li>
+                    <li><a href="https://github.com/Casualtek/Ransomchats">GitHub</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script src="./assets/js/main.js"></script>
+
+    <style>
+        .interview-info {
+            font-style: italic;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3px solid var(--accent-color, #ff6b6b);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .interview-qa {
+            margin: 1.5rem 0;
+        }
+
+        .interview-qa h3 {
+            color: var(--accent-color, #ff6b6b);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .interview-qa .answer {
+            margin-left: 1rem;
+            padding-left: 1rem;
+            border-left: 2px solid rgba(255, 255, 255, 0.1);
+            font-style: italic;
+        }
+
+        .highlight .interview-qa .answer {
+            font-style: normal;
+        }
+    </style>
+</body>
+</html>
