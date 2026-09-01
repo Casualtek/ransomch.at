@@ -1,82 +1,57 @@
 /* About page specific CSS for Ransomch.at */
 
 .acknowledgments {
-    background: rgba(0, 212, 255, 0.05);
-    border: 1px solid rgba(0, 212, 255, 0.2);
+    background: var(--surface);
+    border: 1px solid var(--border);
 }
 
-.acknowledgments h2 {
-    color: #00d4ff;
-    margin-bottom: 25px;
-}
+.acknowledgments h2 { color: var(--text); margin-bottom: 22px; }
 
 .ack-item {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 15px;
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 2;
+    background: var(--msg-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    transition: border-color 0.15s ease;
 }
 
-.ack-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    transform: translateX(5px);
-}
+.ack-item:hover { border-color: var(--border-strong); }
+.ack-item:last-child { margin-bottom: 0; }
 
-.ack-item:last-child {
-    margin-bottom: 0;
-}
+.ack-contributor { font-weight: 600; color: var(--accent); margin-bottom: 6px; }
+.ack-description { color: var(--text-dim); line-height: 1.6; }
 
-.ack-contributor {
-    font-weight: 600;
-    color: #00d4ff;
-    margin-bottom: 8px;
-}
-
-.ack-description {
-    color: #b8c5d1;
-    line-height: 1.6;
-}
-
-.contribute-section {
-    background: rgba(255, 107, 107, 0.08);
-    border: 1px solid rgba(255, 107, 107, 0.2);
-}
-
-.contribute-section h2 {
-    color: #ff6b6b;
-}
+.contribute-section { background: var(--attack-bg); border: 1px solid #4a2531; }
+.contribute-section h2 { color: var(--attack); }
 
 .contribute-section .highlight {
-    background: rgba(255, 107, 107, 0.1);
-    padding: 15px;
-    border-radius: 10px;
-    margin: 20px 0;
-    border-left: 4px solid #ff6b6b;
+    background: rgba(240, 101, 122, 0.08);
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    margin: 18px 0;
+    border-left: 3px solid var(--attack);
 }
 
-.contribute-section .highlight p {
-    margin: 0;
-    font-weight: 500;
-    color: #ff9999;
-}
+.contribute-section .highlight p { margin: 0; font-weight: 500; color: var(--text); }
 
-.coffee-support {
-    text-align: center;
-    padding: 40px 0;
-}
+.coffee-support { text-align: center; padding: 32px 0; }
 
 .coffee-support img {
     max-width: 200px;
     height: auto;
-    transition: transform 0.3s ease, filter 0.3s ease;
-    border-radius: 10px;
+    transition: transform 0.15s ease;
+    border-radius: var(--radius-sm);
+    margin: 0 auto;
 }
 
-.coffee-support img:hover {
-    transform: scale(1.05);
-    filter: brightness(1.1);
-}
+.coffee-support img:hover { transform: translateY(-2px); }
+
+/* Long-form article body */
+.article-body p,
+.article-body li { line-height: 1.75; }
+
+.article-body ul,
+.article-body ol { margin: 0 0 16px 20px; color: var(--text-dim); }
+
+.article-body li { margin-bottom: 8px; }
