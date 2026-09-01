@@ -1,276 +1,384 @@
-// Main JavaScript for Ransomch.at
+/* Viewer JavaScript for Ransomch.at
+ *
+ * Features:
+ *  - Chat directory sidebar (grouped, searchable)
+ *  - Deep links:  #/chat/<group>/<chatId>  and  ?group=<g>&chat=<id>
+ *  - Copy direct link to the current chat
+ *  - Clean, professional rendering of attacker / victim / system messages
+ */
 
-// Function to format numbers with appropriate suffixes
-function formatNumber(num) {
-    if (num >= 1000000) {
-        return (num / 1000000).toFixed(1) + 'M';
-    } else if (num >= 1000) {
-        return (num / 1000).toFixed(1) + 'K';
-    }
-    return num.toString();
+'use strict';
+
+const CHAT_INDEX_URL =
+    'https://raw.githubusercontent.com/Casualtek/Ransomchats/main/chat_index.json';
+
+// ---- State ---------------------------------------------------------------
+let chatIndex = null;
+let currentGroup = null;
+let currentChat = null;   // the chat index entry for the open conversation
+let searchToken = 0;
+const openGroups = new Set();  // remember which groups are expanded
+
+// ---- Utilities ------------------------------------------------------------
+const $ = (sel) => document.querySelector(sel);
+
+function escapeHtml(str) {
+    return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 
-// Function to animate number counting
-function animateNumber(element, targetNum, duration = 2000) {
-    const startNum = 0;
-    const startTime = performance.now();
-    
-    function updateNumber(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        // Easing function for smooth animation
-        const easeOut = 1 - Math.pow(1 - progress, 3);
-        const currentNum = Math.floor(startNum + (targetNum - startNum) * easeOut);
-        
-        element.textContent = formatNumber(currentNum);
-        
-        if (progress < 1) {
-            requestAnimationFrame(updateNumber);
-        } else {
-            element.textContent = formatNumber(targetNum);
-        }
-    }
-    
-    requestAnimationFrame(updateNumber);
-}
-
-// Function to load and display the last updated date
-async function loadLastUpdated() {
-    const lastUpdatedElement = document.getElementById('last-updated');
-    
-    try {
-        const url = `https://raw.githubusercontent.com/Casualtek/Ransomchats/main/chat_index.json?t=${Date.now()}`;
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-            throw new Error(`Failed to load chat index: HTTP ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.last_updated) {
-            const date = new Date(data.last_updated);
-            const formattedDate = date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            lastUpdatedElement.textContent = `Last updated: ${formattedDate}`;
-        } else {
-            lastUpdatedElement.textContent = 'Last updated: Unknown';
-        }
-    } catch (error) {
-        console.error('Error loading last updated date:', error);
-        lastUpdatedElement.textContent = 'Last updated: Unable to load';
-    }
-}
-
-// Function to load statistics from the JSON file
-async function loadStatistics() {
-    const statElements = {
-        chats: document.getElementById('stat-chats'),
-        groups: document.getElementById('stat-groups'),
-        messages: document.getElementById('stat-messages')
+function formatGroupName(group) {
+    const known = {
+        'lockbit3.0': 'LockBit 3.0',
+        'mount-locker': 'Mount Locker',
+        fog: 'Fog',
+        trinity: 'Trinity',
     };
+    if (known[group]) return known[group];
+    return group.charAt(0).toUpperCase() + group.slice(1);
+}
 
-    const errorElements = {
-        chats: document.getElementById('error-chats'),
-        groups: document.getElementById('error-groups'),
-        messages: document.getElementById('error-messages')
-    };
+function chatIdOf(chat) {
+    return chat.chat_id || chat.filename || '';
+}
 
-    const lastUpdatedElement = document.getElementById('last-updated');
+function chatFileUrl(group, chat) {
+    if (chat.raw_url) return chat.raw_url;
+    if (chat.path) return `https://raw.githubusercontent.com/Casualtek/Ransomchats/main/${chat.path.replace(/^\/+/, '')}`;
+    return `https://raw.githubusercontent.com/Casualtek/Ransomchats/main/chats/${group}/${chat.filename}`;
+}
 
-    // Add loading animation
-    Object.values(statElements).forEach(el => {
-        if (el) el.classList.add('loading');
-    });
+// Canonical deep link for a chat
+function deepLinkFor(group, chat) {
+    return `${location.origin}${location.pathname}#/chat/${encodeURIComponent(group)}/${encodeURIComponent(chatIdOf(chat))}`;
+}
 
-    // Clear any previous error messages
-    Object.values(errorElements).forEach(el => {
-        if (el) {
-            el.classList.remove('show');
-            el.textContent = '';
+// Find a chat entry by chatId (or filename) within a group
+function findChat(group, chatId) {
+    const g = chatIndex?.groups?.[group];
+    if (!g) return null;
+    return (g.chats || []).find(
+        (c) => chatIdOf(c) === chatId || c.filename === chatId
+    ) || null;
+}
+
+// ---- Routing ---------------------------------------------------------------
+// Supported:
+//   #/chat/<group>/<chatId>
+//   ?group=<g>&chat=<id>
+function parseRoute() {
+    const hash = location.hash || '';
+
+    const m = hash.match(/^#\/chat\/([^\/]+)\/(.+)$/);
+    if (m) {
+        return { group: decodeURIComponent(m[1]), chatId: decodeURIComponent(m[2]) };
+    }
+
+    const params = new URLSearchParams(location.search);
+    const g = params.get('group');
+    const c = params.get('chat');
+    if (g && c) return { group: g, chatId: c };
+
+    const g2 = params.get('group');
+    if (g2) return { group: g2, chatId: null };
+
+    return null;
+}
+
+async function applyRoute() {
+    if (!chatIndex) return; // will be applied after index loads
+    const route = parseRoute();
+    if (!route) return;
+
+    const group = route.group;
+    if (!chatIndex.groups?.[group]) {
+        // Try a case-insensitive group match as a convenience
+        const match = Object.keys(chatIndex.groups).find(
+            (k) => k.toLowerCase() === String(group).toLowerCase()
+        );
+        if (match) await selectGroup(match);
+        return showToast(`Unknown group "${escapeHtml(group)}"`);
+    }
+
+    await selectGroup(group);
+
+    if (route.chatId) {
+        const chat = findChat(group, route.chatId);
+        if (chat) {
+            await openChat(group, chat, /*updateUrl=*/false);
+        } else {
+            showToast(`Chat "${escapeHtml(route.chatId)}" not found`);
         }
-    });
+    }
+}
 
-    console.log('Attempting to load statistics...');
+// Keep the URL in sync with the open conversation (deep links)
+function setRoute(group, chat) {
+    const url = chat
+        ? `#/chat/${encodeURIComponent(group)}/${encodeURIComponent(chatIdOf(chat))}`
+        : `#/group/${encodeURIComponent(group)}`;
+    history.replaceState(null, '', url);
+}
+
+// ---- Directory sidebar ------------------------------------------------------
+function renderDirectory(filter = '') {
+    const container = $('#groupList');
+    const q = filter.trim().toLowerCase();
+    container.innerHTML = '';
+
+    if (!chatIndex?.groups) {
+        container.innerHTML = '<div class="sidebar-empty">Failed to load conversations.</div>';
+        return;
+    }
+
+    const groups = Object.keys(chatIndex.groups).sort((a, b) => a.localeCompare(b));
+    let anyVisible = false;
+
+    for (const group of groups) {
+        const chats = (chatIndex.groups[group].chats || []).slice();
+        const groupName = formatGroupName(group);
+
+        const visibleChats = q
+            ? chats.filter((c) =>
+                chatIdOf(c).toLowerCase().includes(q) ||
+                groupName.toLowerCase().includes(q) ||
+                group.toLowerCase().includes(q))
+            : chats;
+
+        // Hide groups that don't match the filter and have no matching chats
+        if (q && visibleChats.length === 0 && !groupName.toLowerCase().includes(q)) {
+            continue;
+        }
+        anyVisible = true;
+
+        const groupEl = document.createElement('div');
+        const isOpen = openGroups.has(group) || group === currentGroup || Boolean(q);
+        if (isOpen) openGroups.add(group);
+        groupEl.className = 'group-block' + (isOpen ? ' open' : '');
+
+        const header = document.createElement('button');
+        header.className = 'group-header';
+        header.setAttribute('role', 'treeitem');
+        header.innerHTML = `
+            <span class="group-chevron">›</span>
+            <span class="group-name">${escapeHtml(groupName)}</span>
+            <span class="group-count">${chats.length}</span>
+        `;
+        header.addEventListener('click', () => {
+            groupEl.classList.toggle('open');
+            if (groupEl.classList.contains('open')) openGroups.add(group);
+            else openGroups.delete(group);
+        });
+
+        const list = document.createElement('div');
+        list.className = 'group-chats';
+
+        for (const chat of visibleChats.sort((a, b) =>
+            chatIdOf(a).localeCompare(chatIdOf(b)))) {
+            const item = document.createElement('button');
+            item.className = 'chat-item' +
+                (currentChat && chatIdOf(currentChat) === chatIdOf(chat) ? ' active' : '');
+            item.textContent = chatIdOf(chat);
+            item.title = `${groupName} · ${chatIdOf(chat)}`;
+            item.addEventListener('click', () => {
+                openChat(group, chat, true);
+                // On small screens, collapse the directory so the chat is visible
+                if (window.innerWidth <= 900) document.querySelector('.viewer-shell')?.classList.add('collapsed');
+            });
+            list.appendChild(item);
+        }
+
+        groupEl.appendChild(header);
+        groupEl.appendChild(list);
+        container.appendChild(groupEl);
+    }
+
+    if (!anyVisible) {
+        container.innerHTML = '<div class="sidebar-empty">No conversations match your filter.</div>';
+    }
+}
+
+// ---- Conversation selection -------------------------------------------------
+async function selectGroup(group) {
+    currentGroup = group;
+    currentChat = null;
+    renderDirectory($('#searchInput')?.value || '');
+    setRoute(group, null);
+    $('#copyLinkBtn').disabled = true;
+}
+
+async function openChat(group, chat, updateUrl = true) {
+    currentGroup = group;
+    currentChat = chat;
+
+    // Reflect selection in the directory
+    document.querySelectorAll('.chat-item.active').forEach((el) => el.classList.remove('active'));
+    renderDirectory($('#searchInput')?.value || '');
+
+    if (updateUrl) setRoute(group, chat);
+
+    // Enable + wire the copy-link button
+    const copyBtn = $('#copyLinkBtn');
+    copyBtn.disabled = false;
+    copyBtn.onclick = () => copyLink(group, chat);
+
+    // Header info
+    setTopbarInfo(chatIdOf(chat), `${formatGroupName(group)} · ${chat.message_count ?? '…'} messages`);
+
+    // Loading state
+    const chatContent = $('#chatContent');
+    chatContent.innerHTML = `
+        <div class="empty-state">
+            <div class="message-loading"><span></span><span></span><span></span></div>
+            <p>Loading messages…</p>
+        </div>`;
+    chatContent.scrollTop = 0;
 
     try {
-        // Use the same URL and method as viewer.html with cache busting
-        const url = `https://raw.githubusercontent.com/Casualtek/Ransomchats/main/chat_index.json?t=${Date.now()}`;
-        
-        console.log(`Loading data from: ${url}`);
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-            throw new Error(`Failed to load chat index: HTTP ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Successfully loaded JSON:', data);
-
-        // Remove loading animation
-        Object.values(statElements).forEach(el => {
-            if (el) el.classList.remove('loading');
-        });
-
-        // Update last updated date
-        if (data.last_updated && lastUpdatedElement) {
-            const date = new Date(data.last_updated);
-            const formattedDate = date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            lastUpdatedElement.textContent = `Last updated: ${formattedDate}`;
-        } else if (lastUpdatedElement) {
-            lastUpdatedElement.textContent = 'Last updated: Unknown';
-        }
-
-        // Extract statistics - check if data has statistics property or if it's the root
-        const stats = data.statistics || data;
-        
-        // Animate the numbers with the actual data
-        if (stats.total_chats !== undefined && statElements.chats) {
-            animateNumber(statElements.chats, stats.total_chats);
-        } else {
-            // Try to calculate from groups if available
-            if (data.groups && statElements.chats) {
-                const totalChats = Object.values(data.groups).reduce((sum, group) => {
-                    return sum + (group.chats ? group.chats.length : 0);
-                }, 0);
-                animateNumber(statElements.chats, totalChats);
-            } else if (statElements.chats) {
-                statElements.chats.textContent = 'N/A';
-                if (errorElements.chats) {
-                    errorElements.chats.textContent = 'total_chats not found';
-                    errorElements.chats.classList.add('show');
-                }
-            }
-        }
-        
-        if (stats.total_groups !== undefined && statElements.groups) {
-            animateNumber(statElements.groups, stats.total_groups);
-        } else {
-            // Try to calculate from groups if available
-            if (data.groups && statElements.groups) {
-                const totalGroups = Object.keys(data.groups).length;
-                animateNumber(statElements.groups, totalGroups);
-            } else if (statElements.groups) {
-                statElements.groups.textContent = 'N/A';
-                if (errorElements.groups) {
-                    errorElements.groups.textContent = 'total_groups not found';
-                    errorElements.groups.classList.add('show');
-                }
-            }
-        }
-        
-        if (stats.total_messages !== undefined && statElements.messages) {
-            animateNumber(statElements.messages, stats.total_messages);
-        } else {
-            // Try to calculate from groups if available
-            if (data.groups && statElements.messages) {
-                const totalMessages = Object.values(data.groups).reduce((sum, group) => {
-                    return sum + (group.chats ? group.chats.reduce((chatSum, chat) => {
-                        return chatSum + (chat.message_count || 0);
-                    }, 0) : 0);
-                }, 0);
-                animateNumber(statElements.messages, totalMessages);
-            } else if (statElements.messages) {
-                statElements.messages.textContent = 'N/A';
-                if (errorElements.messages) {
-                    errorElements.messages.textContent = 'total_messages not found';
-                    errorElements.messages.classList.add('show');
-                }
-            }
-        }
-
-    } catch (error) {
-        console.error('Error loading statistics:', error);
-        
-        // Remove loading animation and show fallback numbers
-        Object.values(statElements).forEach(el => {
-            if (el) el.classList.remove('loading');
-        });
-
-        // Show fallback last updated date
-        if (lastUpdatedElement) {
-            lastUpdatedElement.textContent = 'Last updated: Unable to load';
-        }
-
-        // Show some demo numbers as fallback
-        if (statElements.chats) animateNumber(statElements.chats, 218);
-        if (statElements.groups) animateNumber(statElements.groups, 23);
-        if (statElements.messages) animateNumber(statElements.messages, 10699);
-
-        // Show error messages
-        Object.values(errorElements).forEach(el => {
-            if (el) {
-                el.textContent = 'Using demo data';
-                el.classList.add('show');
-            }
-        });
-        
-        console.log('Using fallback demo data due to loading error');
+        const data = await fetchChatData(chatFileUrl(group, chat));
+        const messages = data.messages || [];
+        setTopbarInfo(chatIdOf(chat), `${formatGroupName(group)} · ${messages.length} messages`);
+        renderMessages(messages);
+    } catch (err) {
+        console.error('Error loading chat:', err);
+        chatContent.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">⚠️</div>
+                <h3>Could not load conversation</h3>
+                <p>${escapeHtml(err.message)}</p>
+            </div>`;
     }
 }
 
-// Smooth scrolling for navigation links
-function setupSmoothScrolling() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
+async function fetchChatData(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+}
+
+// ---- Rendering --------------------------------------------------------------
+function setTopbarInfo(title, meta) {
+    $('#topbarInfo').innerHTML = `
+        <div class="topbar-title">${escapeHtml(title)}</div>
+        <div class="topbar-meta">${escapeHtml(meta)}</div>
+    `;
+}
+
+function renderMessages(messages) {
+    const chatContent = $('#chatContent');
+    chatContent.innerHTML = '';
+
+    if (!messages || messages.length === 0) {
+        chatContent.innerHTML = '<div class="empty-state"><p>No messages in this conversation.</p></div>';
+        return;
+    }
+
+    for (const message of messages) {
+        const party = (message.party || '').toLowerCase();
+        const type = party === 'victim' ? 'victim' : party === 'system' ? 'system' : 'attacker';
+        const sender = String(message.party || 'Unknown');
+        const initial = escapeHtml((sender.replace(/[^a-zA-Z0-9 ]/g, '').trim()[0] || '?').toUpperCase());
+
+        const el = document.createElement('div');
+        el.className = `message message-${type}`;
+        el.innerHTML = `
+            <div class="message-head">
+                <span class="msg-avatar avatar-${type}">${initial}</span>
+                <span class="msg-sender sender-${type}">${escapeHtml(sender)}</span>
+                ${message.timestamp && message.timestamp.trim()
+                    ? `<span class="msg-time">${escapeHtml(message.timestamp)}</span>` : ''}
+            </div>
+            <div class="msg-body">${escapeHtml(message.content ?? '')}</div>
+        `;
+        chatContent.appendChild(el);
+    }
+
+    chatContent.scrollTop = 0;
+}
+
+// ---- Copy link --------------------------------------------------------------
+async function copyLink(group, chat) {
+    const link = deepLinkFor(group, chat);
+    try {
+        await navigator.clipboard.writeText(link);
+        showToast('Direct link copied to clipboard');
+    } catch {
+        // Fallback for older browsers / permission issues
+        const ta = document.createElement('textarea');
+        ta.value = link;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast('Direct link copied to clipboard'); }
+        catch { showToast(link); }
+        document.body.removeChild(ta);
+    }
+}
+
+let toastTimer = null;
+function showToast(text) {
+    const toast = $('#toast');
+    toast.textContent = text;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+}
+
+// ---- Load index --------------------------------------------------------------
+async function loadChatIndex() {
+    const container = $('#groupList');
+    try {
+        const res = await fetch(`${CHAT_INDEX_URL}?t=${Date.now()}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        chatIndex = await res.json();
+        renderDirectory('');
+        await applyRoute();
+    } catch (err) {
+        console.error('Error loading chat index:', err);
+        container.innerHTML = `
+            <div class="sidebar-empty">
+                Failed to load conversations.<br>
+                <small>${escapeHtml(err.message)}</small>
+            </div>`;
+    }
+}
+
+// ---- Sidebar collapse (mobile) ------------------------------------------------
+function setupSidebarToggle() {
+    const btn = $('#sidebarToggle');
+    const shell = document.querySelector('.viewer-shell');
+    const apply = () => {
+        if (window.innerWidth > 900) {
+            shell.classList.remove('collapsed');
+            btn.style.display = 'none';
+        } else {
+            btn.style.display = 'flex';
+        }
+    };
+    btn.addEventListener('click', () => shell.classList.toggle('collapsed'));
+    window.addEventListener('resize', apply);
+    apply();
+}
+
+// ---- Search -------------------------------------------------------------------
+function setupSearch() {
+    const input = $('#searchInput');
+    input.addEventListener('input', () => {
+        const token = ++searchToken;
+        // debounce ~150ms
+        setTimeout(() => {
+            if (token === searchToken) renderDirectory(input.value);
+        }, 150);
     });
 }
 
-// Add loading animation to CTA buttons
-function setupCTAButtons() {
-    document.querySelectorAll('.btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            if (this.classList.contains('btn-primary')) {
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 150);
-            }
-        });
-    });
-}
-
-// Initialize common functionality when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing...');
-    setupSmoothScrolling();
-    setupCTAButtons();
-    
-    // Load statistics if the elements exist (for index.html)
-    if (document.getElementById('stat-chats')) {
-        loadStatistics();
-    }
-    
-    // Load last updated date if the element exists
-    if (document.getElementById('last-updated')) {
-        loadLastUpdated();
-    }
-});
-
-// Also try loading stats when the page is fully loaded
-window.addEventListener('load', function() {
-    console.log('Window loaded');
-    // Don't reload if already loaded successfully
-    const firstStat = document.getElementById('stat-chats');
-    if (firstStat && firstStat.textContent === '...') {
-        console.log('Stats not loaded yet, retrying...');
-        setTimeout(loadStatistics, 1000);
-    }
+// ---- Init ---------------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    setupSidebarToggle();
+    setupSearch();
+    loadChatIndex();
+    window.addEventListener('hashchange', applyRoute);
 });
