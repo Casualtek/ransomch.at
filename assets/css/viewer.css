@@ -228,6 +228,49 @@ body { height: 100dvh; overflow: hidden; background: var(--bg); }
 .message-victim { border-left-color: var(--victim); }
 .message-system { border-left-color: var(--text-mute); }
 
+.message:target {
+    box-shadow: 0 0 0 2px var(--accent);
+    transition: box-shadow 0.2s ease;
+}
+
+.msg-highlight {
+    animation: msg-flash 2.4s ease-out;
+    box-shadow: 0 0 0 2px var(--accent);
+}
+
+@keyframes msg-flash {
+    0% { box-shadow: 0 0 0 2px var(--accent); background: var(--accent-soft); }
+    30% { box-shadow: 0 0 0 2px var(--accent); background: var(--accent-soft); }
+    100% { box-shadow: 0 0 0 2px transparent; background: var(--msg-bg); }
+}
+
+.msg-link-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-left: 4px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    color: var(--text-mute);
+    font: inherit;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.12s ease, color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+    flex-shrink: 0;
+}
+
+.message:hover .msg-link-btn,
+.msg-link-btn:focus-visible { opacity: 1; }
+.msg-link-btn:hover { color: var(--text); border-color: var(--border-strong); background: var(--surface-raised); }
+
+/* When a message has no timestamp (msg-time has margin-left:auto),
+   push the permalink button to the far right instead. */
+.message-head:not(:has(.msg-time)) .msg-link-btn { margin-left: auto; }
+
 .message-head {
     display: flex;
     align-items: center;
@@ -359,4 +402,9 @@ body { height: 100dvh; overflow: hidden; background: var(--bg); }
 
     .viewer-shell.collapsed .sidebar { transform: translateX(-100%); }
     .topbar-nav { display: none; }
+}
+
+/* Touch / small screens: no hover, so keep message permalinks visible */
+@media (hover: none), (max-width: 900px) {
+    .msg-link-btn { opacity: 1; }
 }
