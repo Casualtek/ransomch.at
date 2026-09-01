@@ -52,9 +52,11 @@ function chatFileUrl(group, chat) {
     return `https://raw.githubusercontent.com/Casualtek/Ransomchats/main/chats/${group}/${chat.filename}`;
 }
 
-// Canonical deep link for a chat
-function deepLinkFor(group, chat) {
-    return `${location.origin}${location.pathname}#/chat/${encodeURIComponent(group)}/${encodeURIComponent(chatIdOf(chat))}`;
+// Canonical deep link for a chat (optionally pointing at a specific message)
+function deepLinkFor(group, chat, msgIndex = null) {
+    let url = `${location.origin}${location.pathname}#/chat/${encodeURIComponent(group)}/${encodeURIComponent(chatIdOf(chat))}`;
+    if (msgIndex !== null) url += `/msg/${msgIndex}`;
+    return url;
 }
 
 // Find a chat entry by chatId (or filename) within a group
@@ -69,9 +71,19 @@ function findChat(group, chatId) {
 // ---- Routing ---------------------------------------------------------------
 // Supported:
 //   #/chat/<group>/<chatId>
-//   ?group=<g>&chat=<id>
+//   #/chat/<group>/<chatId>/msg/<n>
+//   ?group=<g>&chat=<id>&msg=<n>
 function parseRoute() {
     const hash = location.hash || '';
+
+    const mm = hash.match(/^#\/chat\/([^\/]+)\/(.+?)\/msg\/(\d+)$/);
+    if (mm) {
+        return {
+            group: decodeURIComponent(mm[1]),
+            chatId: decodeURIComponent(mm[2]),
+            msgIndex: parseInt(mm[3], 10),
+        };
+    }
 
     const m = hash.match(/^#\/chat\/([^\/]+)\/(.+)$/);
     if (m) {
@@ -81,7 +93,12 @@ function parseRoute() {
     const params = new URLSearchParams(location.search);
     const g = params.get('group');
     const c = params.get('chat');
-    if (g && c) return { group: g, chatId: c };
+    const msg = params.get('msg');
+    if (g && c) {
+        const route = { group: g, chatId: c };
+        if (msg !== null && /^\d+$/.test(msg)) route.msgIndex = parseInt(msg, 10);
+        return route;
+    }
 
     const g2 = params.get('group');
     if (g2) return { group: g2, chatId: null };
@@ -104,12 +121,15 @@ async function applyRoute() {
         return showToast(`Unknown group "${escapeHtml(group)}"`);
     }
 
-    await selectGroup(group);
+    await selectGroup(group, { updateUrl: !route.chatId });
 
     if (route.chatId) {
         const chat = findChat(group, route.chatId);
         if (chat) {
-            await openChat(group, chat, /*updateUrl=*/false);
+            await openChat(group, chat, {
+                updateUrl: route.msgIndex == null,
+                focusIndex: route.msgIndex ?? null,
+            });
         } else {
             showToast(`Chat "${escapeHtml(route.chatId)}" not found`);
         }
@@ -212,15 +232,18 @@ function renderDirectory(filter = '') {
 }
 
 // ---- Conversation selection -------------------------------------------------
-async function selectGroup(group) {
+async function selectGroup(group, { updateUrl = true } = {}) {
     currentGroup = group;
     currentChat = null;
     renderDirectory($('#searchInput')?.value || '');
-    setRoute(group, null);
+    if (updateUrl) setRoute(group, null);
     $('#copyLinkBtn').disabled = true;
 }
 
-async function openChat(group, chat, updateUrl = true) {
+async function openChat(group, chat, opts = {}) {
+    // Support the legacy boolean signature: openChat(group, chat, true)
+    if (typeof opts === 'boolean') opts = { updateUrl: opts };
+    const { updateUrl = true, focusIndex = null } = opts;
     currentGroup = group;
     currentChat = chat;
 
@@ -252,6 +275,7 @@ async function openChat(group, chat, updateUrl = true) {
         const messages = data.messages || [];
         setTopbarInfo(chatIdOf(chat), `${formatGroupName(group)} · ${messages.length} messages`);
         renderMessages(messages);
+        if (focusIndex !== null) focusMessage(focusIndex);
     } catch (err) {
         console.error('Error loading chat:', err);
         chatContent.innerHTML = `
@@ -286,7 +310,7 @@ function renderMessages(messages) {
         return;
     }
 
-    for (const message of messages) {
+    messages.forEach((message, index) => {
         const party = (message.party || '').toLowerCase();
         const type = party === 'victim' ? 'victim' : party === 'system' ? 'system' : 'attacker';
         const sender = String(message.party || 'Unknown');
@@ -294,19 +318,54 @@ function renderMessages(messages) {
 
         const el = document.createElement('div');
         el.className = `message message-${type}`;
+        el.id = `msg-${index}`;
         el.innerHTML = `
             <div class="message-head">
                 <span class="msg-avatar avatar-${type}">${initial}</span>
                 <span class="msg-sender sender-${type}">${escapeHtml(sender)}</span>
                 ${message.timestamp && message.timestamp.trim()
                     ? `<span class="msg-time">${escapeHtml(message.timestamp)}</span>` : ''}
+                <button class="msg-link-btn" title="Copy direct link to this message" aria-label="Copy direct link to this message">
+                    <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M10.6 13.4a1 1 0 0 0 1.4 1.4l3.2-3.2a3 3 0 0 0 0-4.24l-1.5-1.5a1 1 0 1 0-1.42 1.42l1.5 1.5a1 1 0 0 1 0 1.4l-3.14 3.22Zm2.8-2.8a1 1 0 0 0-1.4-1.4l-3.2 3.2a3 3 0 0 0 0 4.24l1.5 1.5a1 1 0 0 0 1.4-1.42l-1.5-1.5a1 1 0 0 1 0-1.4l3.2-3.22Z"/></svg>
+                </button>
             </div>
             <div class="msg-body">${escapeHtml(message.content ?? '')}</div>
         `;
+        el.querySelector('.msg-link-btn').addEventListener('click', () => copyMessageLink(index));
         chatContent.appendChild(el);
-    }
+    });
 
     chatContent.scrollTop = 0;
+}
+
+// Scroll to a message by index and flash-highlight it
+function focusMessage(index) {
+    const el = document.getElementById(`msg-${index}`);
+    if (!el) {
+        showToast(`Message #${index + 1} not found in this conversation`);
+        return;
+    }
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('msg-highlight');
+    setTimeout(() => el.classList.remove('msg-highlight'), 2600);
+}
+
+// Copy a direct link pointing at a specific message
+async function copyMessageLink(index) {
+    if (!currentGroup || !currentChat) return;
+    const link = deepLinkFor(currentGroup, currentChat, index);
+    try {
+        await navigator.clipboard.writeText(link);
+        showToast(`Link to message #${index + 1} copied`);
+    } catch {
+        const ta = document.createElement('textarea');
+        ta.value = link;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast(`Link to message #${index + 1} copied`); }
+        catch { showToast(link); }
+        document.body.removeChild(ta);
+    }
 }
 
 // ---- Copy link --------------------------------------------------------------
