@@ -217,23 +217,6 @@ async function loadStatistics() {
     }
 }
 
-// Create floating particles effect
-function createParticles() {
-    const particlesContainer = document.getElementById('particles');
-    if (!particlesContainer) return;
-    
-    const particleCount = 50;
-
-    for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 20 + 's';
-        particle.style.animationDuration = (15 + Math.random() * 10) + 's';
-        particlesContainer.appendChild(particle);
-    }
-}
-
 // Smooth scrolling for navigation links
 function setupSmoothScrolling() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -247,17 +230,6 @@ function setupSmoothScrolling() {
                 });
             }
         });
-    });
-}
-
-// Add parallax effect to hero section
-function setupParallaxEffect() {
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const hero = document.querySelector('.hero');
-        if (hero) {
-            hero.style.transform = `translateY(${scrolled * 0.5}px)`;
-        }
     });
 }
 
@@ -278,9 +250,7 @@ function setupCTAButtons() {
 // Initialize common functionality when page loads
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing...');
-    createParticles();
     setupSmoothScrolling();
-    setupParallaxEffect();
     setupCTAButtons();
     
     // Load statistics if the elements exist (for index.html)
