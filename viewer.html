@@ -2,50 +2,66 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="https://ransomch.at/favicon.ico"/>
+    <link rel="icon" href="./favicon.ico"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ransomchat Viewer - Ransomch.at</title>
+    <title>Chat Viewer · Ransomch.at</title>
+    <meta name="robots" content="noindex,follow">
     <link rel="stylesheet" href="./assets/css/main.css">
     <link rel="stylesheet" href="./assets/css/viewer.css">
-    <script src="./assets/js/viewer.js"></script>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Header -->
-        <div class="header">
-            <nav class="header-nav">
+    <div class="viewer-shell">
+        <!-- Sidebar: chat directory -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
                 <a href="./" class="logo">
-                    <img src="https://ransomch.at/logo.png" alt="Ransomchats Logo">
-                    <span class="logo-text">Ransomch.at</span>
-                    <div class="chat-header-info">
-                        <div class="chat-title">Chat Title</div>
-                        <div class="chat-meta">Chat Meta</div>
-                    </div>
+                    <img src="./logo.png" alt="Ransomch.at logo">
+                    <span class="logo-word">Ransomch<span class="logo-dot">.at</span></span>
                 </a>
-                <ul class="nav-links">
-                    <li><a href="./">Home</a></li>
-                    <li><a href="./analysis.html">Analysis</a></li>
-                    <li><a href="./about.html">About</a></li>
-                    <li><a href="https://linktr.ee/valerymarchive">Contact</a></li>
-                </ul>
-            </nav>
-        </div>
+                <div class="search-wrap">
+                    <input id="searchInput" class="search-input" type="search" placeholder="Filter groups & chats…" autocomplete="off" spellcheck="false">
+                </div>
+            </div>
+            <div class="chat-list" id="groupList" role="tree" aria-label="Conversation directory">
+                <div class="sidebar-empty">Loading conversations…</div>
+            </div>
+        </aside>
 
-        <!-- Dropdown Bar -->
-        <div class="dropdown-bar">
-            <!-- Dropdowns will be inserted here by JavaScript -->
-        </div>
+        <!-- Main chat pane -->
+        <div class="chat-pane">
+            <div class="topbar">
+                <div class="topbar-info" id="topbarInfo">
+                    <div class="topbar-title">Select a conversation</div>
+                    <div class="topbar-meta">Browse the directory on the left, or open a direct chat link.</div>
+                </div>
+                <div class="topbar-actions">
+                    <button id="copyLinkBtn" class="icon-btn" title="Copy direct link to this chat" disabled>
+                        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10.6 13.4a1 1 0 0 0 1.4 1.4l3.2-3.2a3 3 0 0 0 0-4.24l-1.5-1.5a1 1 0 1 0-1.42 1.42l1.5 1.5a1 1 0 0 1 0 1.4l-3.14 3.22Zm2.8-2.8a1 1 0 0 0-1.4-1.4l-3.2 3.2a3 3 0 0 0 0 4.24l1.5 1.5a1 1 0 0 0 1.4-1.42l-1.5-1.5a1 1 0 0 1 0-1.4l3.2-3.22Z"/></svg>
+                        <span>Copy link</span>
+                    </button>
+                    <nav class="topbar-nav">
+                        <a href="./">Home</a>
+                        <a href="./analysis.html">Analysis</a>
+                        <a href="./about.html">About</a>
+                    </nav>
+                </div>
+            </div>
 
-        <!-- Main Content -->
-        <div class="main-content with-dropdown">
             <div class="chat-content" id="chatContent">
                 <div class="empty-state">
                     <div class="empty-state-icon">💬</div>
                     <h3>Select a conversation</h3>
-                    <p>Choose a group and then select a chat from the dropdowns above</p>
+                    <p>Pick a group and chat from the directory on the left.<br>
+                    Every conversation has a shareable direct link.</p>
                 </div>
             </div>
         </div>
     </div>
+
+    <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle conversation directory">☰</button>
+
+    <div id="toast" class="toast" role="status"></div>
+
+    <script src="./assets/js/viewer.js"></script>
 </body>
 </html>
