@@ -94,7 +94,7 @@ nav {
 .nav-links a.active { color: var(--accent); }
 
 /* --------------------------------- Hero ----------------------------------- */
-.hero { text-align: center; padding: 88px 0 64px; }
+.hero { text-align: center; padding: 72px 0 64px; }
 
 .hero h1 {
     font-size: 3.25rem;
@@ -142,7 +142,7 @@ nav {
 .btn-secondary:hover { background: var(--surface); text-decoration: none; }
 
 /* -------------------------------- Features -------------------------------- */
-.features { padding: 72px 0; }
+.features { padding: 0 0; }
 
 .features-grid {
     display: grid;
@@ -239,7 +239,7 @@ nav {
 .content-section a { color: var(--accent); }
 
 /* -------------------------------- Stats ----------------------------------- */
-.stats { padding: 60px 0; text-align: center; }
+.stats { padding: 32px 0; text-align: center; }
 
 .stats-grid {
     display: grid;
